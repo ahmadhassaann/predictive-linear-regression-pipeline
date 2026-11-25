@@ -1,17 +1,10 @@
 # Predictive Linear Regression Model Pipeline
 
-A reproducible Python machine-learning pipeline that predicts California median house values with Ridge Regression. The script prepares the data, trains a complete Scikit-Learn pipeline, evaluates predictions, saves the trained model, and produces an actual-versus-predicted plot.
+A reproducible Python machine-learning pipeline that predicts California median house values using Ridge Regression.
 
-## Features
+## Overview
 
-- Loads the California Housing dataset directly through Scikit-Learn.
-- Creates a `longitude_region` feature from longitude (`Western`, `Central`, or `Eastern`).
-- Applies mean imputation and standard scaling to numerical features.
-- Applies most-frequent imputation and one-hot encoding to categorical features.
-- Trains a Ridge Regression model with `alpha=1.0`.
-- Reports R-squared and root mean squared error.
-- Saves the fitted pipeline with Joblib.
-- Exports an actual-versus-predicted scatter plot.
+The project downloads the California Housing dataset from Scikit-Learn, engineers a longitude-region feature, preprocesses numerical and categorical columns, trains a Ridge Regression model, evaluates held-out predictions, saves the fitted pipeline, and exports a diagnostic plot.
 
 ## Project Structure
 
@@ -48,10 +41,7 @@ The first run may download the dataset if it is not already present in Scikit-Le
 - Pandas
 - Scikit-Learn
 - Matplotlib
-- Seaborn
 - Joblib
-
-Seaborn is listed in `requirements.txt`, although the current script does not import it.
 
 ## Installation
 
@@ -59,23 +49,7 @@ From a terminal in the project directory:
 
 ```bash
 python -m venv .venv
-```
-
-Activate the environment on Windows:
-
-```powershell
 .venv\Scripts\Activate.ps1
-```
-
-Or activate it on Linux or macOS:
-
-```bash
-source .venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
@@ -90,7 +64,7 @@ The script automatically creates the `models` and `results` directories when the
 
 ## Model Evaluation
 
-The following results are from an execution using a fixed `random_state=42`:
+The following results use a fixed `random_state=42`:
 
 | Metric | Result |
 |---|---:|
@@ -103,8 +77,9 @@ The target unit is the median house value in units of USD 100,000.
 
 ## Generated Outputs
 
-- Trained model: [ridge_regression_model.pkl](models/ridge_regression_model.pkl)
-- Evaluation plot: [actual_vs_predicted.png](results/actual_vs_predicted.png)
+- [Trained Ridge pipeline](models/ridge_regression_model.pkl)
+- [Actual-versus-predicted plot](results/actual_vs_predicted.png)
+- [Complete PDF report](Report.pdf)
 
 The saved model is a complete Scikit-Learn pipeline. It includes preprocessing and Ridge Regression, so it expects a pandas DataFrame containing the original housing features.
 
@@ -117,7 +92,7 @@ model = joblib.load("models/ridge_regression_model.pkl")
 predictions = model.predict(new_housing_data)
 ```
 
-Your `new_housing_data` must include the original California Housing feature columns. The fitted pipeline creates the engineered longitude region during training, but the model does not recreate it automatically when loading for prediction. Add `longitude_region` to prediction data or wrap feature engineering in a reusable function before using the model for inference.
+Your `new_housing_data` must include the original feature columns and `longitude_region`. The fitted pipeline does not recreate longitude-region categories automatically during inference.
 
 ## Pipeline Workflow
 
@@ -131,8 +106,16 @@ Your `new_housing_data` must include the original California Housing feature col
 8. Calculate R-squared and RMSE.
 9. Save the fitted pipeline and visualization.
 
-## Author
+## Method Notes
 
-Ahmad Hassan  
-BS Artificial Intelligence  
-FAST NUCES Islamabad
+- Numerical features are mean-imputed and standardized.
+- The categorical feature is most-frequent-imputed and one-hot encoded.
+- Unknown prediction categories are ignored by `OneHotEncoder`.
+- Ridge uses `alpha=1.0`.
+
+## Limitations
+
+- The current linear model explains about 57.8% of test variance.
+- Extreme high-value houses are harder to predict accurately.
+- The script does not perform cross-validation or hyperparameter tuning.
+- Feature engineering should be moved into a custom transformer for a production inference API.
